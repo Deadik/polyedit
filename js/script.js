@@ -5,7 +5,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
 	var ctx = canvas.getContext('2d');
 
 	plan = new Plan(ctx,canvas);
-	plan.loadImage(document.getElementById('plan_edit_src').getAttribute('src'));
+	plan.loadImage(document.getElementById('editor_canvas').getAttribute('data-src'));
 	//or however you get a handle to the IMG
 
 	plan.polygonHexColor = '#000000';
@@ -22,35 +22,12 @@ document.addEventListener("DOMContentLoaded", function(event) {
 	 * @param {} event
 	 * @return 
 	 */
-	document.getElementById('editor_canvas').onclick=function(event){
-
-		//Проверяем, попадает ли угол полигона под клик
-		if(plan.checkClick(event.offsetX,event.offsetY)){
-			plan.checkClick(event.offsetX,event.offsetY).click();
-		}else{
-			plan.drowPoint(event.offsetX,event.offsetY);
-		}
-		
-
-		//Проверяем, попадает ли фигура под клик (подумать)
-
-		//Рисуем точку
-		
-	};
+	
 
 
 });
 
-document.addEventListener('mousemove', function(event){
-	switch(event.target.id){
-		case 'editor_canvas':
-		//Проверяем на какой точке находимся
-		plan.checkHover(event.offsetX,event.offsetY);
-		break;
-		default:
-		break;
-	}
-}, false);
+
 
 function hexToRgb(hex) {
     var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
