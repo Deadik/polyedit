@@ -5,16 +5,42 @@
  * @param {} context Контекст в котором будет происходить работа
  * @return 
  */
-var Plan = function(context){
+var Plan = function(context,el){
+	this.el=el;
 	this.width = false;
 	this.height = false;
 	this.context = context;
 	this.bascground = false;
 	this.imageObj = false;
+	this.context.imageSmoothingEnabled= true;
+	this.polygonFillColor = "rgba(255, 0, 0, 0.5)";
+	this.el.style.cursor = "default";
+	this.points = Array();
+
+	var _plan = this;
+
+	document.addEventListener( "keypress", function(e){
+		
+		switch(e.keyCode){
+			case 127:
+			for(var i=0;i<_plan.points.length;i++){
+				var point = _plan.points[i];
+
+				if(point.isActive)
+					_plan.removePoint(i);
+			}
+			break;
+		}
+		
+	}, true);
 }
 
-Plan.prototype.points = Array();
 Plan.prototype.polygons = Array();
+
+Plan.prototype.removePoint = function(_index){
+	this.points.splice(_index,1);
+	this.update();
+}
 
 /**
  * Добавляет точку в массив точек
@@ -36,7 +62,13 @@ Plan.prototype.drowPoint = function(_X,_Y){
  * @return 
  */
 Plan.prototype.fillPolygon = function(_color){
-	this.context.fillStyle = "rgba(255, 0, 0, 0.5)";
+	this.context.fillStyle = this.polygonFillColor;
+
+	var colorObj = hexToRgb(plan.polygonHexColor);
+	var colorString = 'rgba('+colorObj.r+','+colorObj.g+','+colorObj.b+',1)';
+
+	this.context.strokeStyle=colorString;
+
 	this.context.beginPath();
 
 	for(var i = 0;i<this.points.length;i++){
@@ -58,6 +90,7 @@ Plan.prototype.fillPolygon = function(_color){
 	}
 	this.context.closePath();
 	this.context.fill();
+	this.context.stroke();
 }
 
 /**
@@ -68,7 +101,13 @@ Plan.prototype.fillPolygon = function(_color){
  * @return CallExpression
  */
 Plan.prototype.checkHover = function(_x,_y){
-	return this.checkPoints(_x,_y);
+	this.el.focus();
+	var point = this.checkPoints(_x,_y);
+
+	if(point&&point.isHover&&!point.isActive)
+		this.el.style.cursor = "pointer";
+
+	return point;
 }
 
 /**
@@ -79,7 +118,12 @@ Plan.prototype.checkHover = function(_x,_y){
  * @return CallExpression
  */
 Plan.prototype.checkClick = function(_x,_y){
-	return this.checkPoints(_x,_y);
+	
+	var point = this.checkPoints(_x,_y);
+
+	if(point&&point.isActive);
+		this.el.style.cursor = "move";
+	return point;
 }
 
 /**
@@ -91,19 +135,34 @@ Plan.prototype.checkClick = function(_x,_y){
  */
 Plan.prototype.checkPoints = function(_x,_y){
 	var res = false;
+	var hover = false;
+	var active = false;
 	for(var i = 0;i<this.points.length;i++){
 		var point = this.points[i];
 
 		if(point.isActive){
+			active = true;
 			point.x= _x;
 			point.y= _y;
 			this.update();
 		}
 
 		if(point.check(_x,_y)){
+			hover = true;
 			res = point;
 		}
 	};
+
+	if(hover)
+		this.el.style.cursor = "pointer";
+	else
+		this.el.style.cursor = "default";
+
+	if(active)
+		this.el.style.cursor = "move";
+	else
+		this.el.style.cursor = "default";
+
 	return res;
 }
 
@@ -112,7 +171,7 @@ Plan.prototype.checkPoints = function(_x,_y){
  * @method loadImage
  * @return 
  */
-Plan.prototype.loadImage = function(){
+Plan.prototype.loadImage = function(_src){
 	if(!this.imageObj){
 		var imageObj = new Image();
 
@@ -132,7 +191,7 @@ Plan.prototype.loadImage = function(){
 			
 		};
 
-		imageObj.src=document.getElementById('plan_edit_src').getAttribute('src');//$('#plan_edit_src').attr('src');
+		imageObj.src=_src;//$('#plan_edit_src').attr('src');
 	}else{
 		this.drawImage();
 	}
@@ -190,6 +249,24 @@ Plan.prototype.generateMapArea = function(){
 	area.setAttribute('coords',coords);
 	return area;
 }
+
+Plan.prototype.generateCoords = function(){
+
+	var coords = '';
+
+	for(var i = 0;i<this.points.length;i++){
+		var point = this.points[i];
+		coords += point.x+',';
+		coords += point.y+',';
+	}
+
+	return coords;
+}
+
+Plan.prototype.getHexColor = function(){
+	return this.polygonHexColor;
+}
+
 //Точка на плане
 /**
  * Description
@@ -199,12 +276,13 @@ Plan.prototype.generateMapArea = function(){
  * @param {} _Y
  * @return 
  */
-var Point = function(context,_X,_Y){
+var Point = function(context,_X,_Y,parent){
 
-	this.radius = 2;
+	this.radius = 3;
 	this.x = _X;
 	this.y = _Y;
 	this.context = context;
+	this.parent = parent;
 
 	this.color = '#00AA00';
 	this.colorNorm = '#00AA00';
@@ -272,7 +350,6 @@ Point.prototype.click = function(){
 Point.prototype.setHover = function(_state){
 	if(_state){
 		this.color = this.colorHover;
-		
 	}else{
 		this.color = this.colorNorm;
 	}
@@ -287,10 +364,11 @@ Point.prototype.setHover = function(_state){
  * @return 
  */
 Point.prototype.setActive = function(_state){
-	if(_state)
+	if(_state){
 		this.color = this.colorActive;
-	else
+	}else{
 		this.color = this.colorNorm;
+	}
 	this.isActive = _state;
 	this.draw();
 }
@@ -303,61 +381,3 @@ Point.prototype.setActive = function(_state){
 var Polygon = function(){
 
 }
-
-var plan;
-
-//$(document).ready(function(){
-	//$('#plan_edit_src').mapster();
-document.addEventListener("DOMContentLoaded", function(event) { 
-	var canvas = document.getElementById("editor_canvas"); 
-	var ctx = canvas.getContext('2d');
-
-	plan = new Plan(ctx);
-	plan.loadImage();
-	//or however you get a handle to the IMG
-
-	/**
-	 * Description
-	 * @method onclick
-	 * @param {} event
-	 * @return 
-	 */
-	document.getElementById('get_area').onclick=function(event){
-		var el = plan.generateMapArea();
-		console.log(el);
-	}
-
-	//Обрабатываем клики
-	/**
-	 * Description
-	 * @method onclick
-	 * @param {} event
-	 * @return 
-	 */
-	document.getElementById('editor_canvas').onclick=function(event){
-
-		//Проверяем, попадает ли угол полигона под клик
-		if(plan.checkClick(event.offsetX,event.offsetY)){
-			plan.checkClick(event.offsetX,event.offsetY).click();
-		}else{
-			plan.drowPoint(event.offsetX,event.offsetY);
-		}
-		
-
-		//Проверяем, попадает ли фигура под клик (подумать)
-
-		//Рисуем точку
-		
-	};
-});
-
-document.addEventListener('mousemove', function(event){
-	switch(event.target.id){
-		case 'editor_canvas':
-		//Проверяем на какой точке находимся
-		plan.checkHover(event.offsetX,event.offsetY);
-		break;
-		default:
-		break;
-	}
-}, false);
