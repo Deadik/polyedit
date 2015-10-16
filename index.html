@@ -6,8 +6,13 @@
  	<script type="text/javascript" src="./js/script.js"></script>
  </head>
  <body>
- 	<img id="plan_edit_src" src="./images/image.png"/>
-	<canvas id="editor_canvas"></canvas>
-	<button id="get_area">Получить код</button>
+ 	<!-- <img id="plan_edit_src" src="./images/image.png"/> -->
+ 	<div id="editor_toolbar">
+ 		<select id="polygons">
+ 		</select>
+ 		<button id="addPoly">Новый полигон</button>
+ 	</div>
+	<canvas id="editor_canvas" data-src="./images/image.png"></canvas>
+	
  </body>
  </html> 
