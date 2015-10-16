@@ -168,11 +168,12 @@ Plan.prototype.getActivePoly = function(){
 
  	this.context.strokeStyle=colorString;
 
- 	this.context.beginPath();
+ 	
 
  	for (var j = this.polygons.length - 1; j >= 0; j--) {
 
  		var polygon = this.polygons[j];
+ 		this.context.beginPath();
 
  		for(var i = 0;i<polygon.points.length;i++){
  			var point = polygon.points[i];
@@ -191,10 +192,12 @@ Plan.prototype.getActivePoly = function(){
  				break;
  			}
  		}
+ 		this.context.closePath();
+ 		this.context.fill();
+ 		this.context.stroke();
  	}
- 	this.context.closePath();
- 	this.context.fill();
- 	this.context.stroke();
+ 	
+ 	
  }
 
  Plan.prototype.pointToLineDistance = function(_x,_y,_line_start,_line_end){
