@@ -26,6 +26,31 @@
 	var polySelector = document.getElementById('polygons');
 	var _plan = this;
 
+	this.colorSelector = document.getElementById('polyColor');
+	this.colorSelector.addEventListener('change',function(){
+		var poly = _plan.getActivePoly();
+		poly.fillColor = this.value;
+		_plan.update();
+	});
+
+	this.transparencySelector = document.getElementById('polyTransparency');
+	this.transparencySelector.addEventListener("change",function(){
+
+		this.value = parseFloat(this.value);
+
+		if(this.value>1){
+			this.value=1;
+		}
+
+		if(this.value<0){
+			this.value=0;
+		}
+
+		var poly = _plan.getActivePoly();
+		poly.transparency = this.value;
+		_plan.update();
+	});
+
 	polySelector.addEventListener("change",function(e){
 		var poly = _plan.getById(this.value);
 		if(poly){
@@ -122,6 +147,8 @@ Plan.prototype.setActive = function(_poly){
 	for (var i = this.polygons.length - 1; i >= 0; i--) {
 		this.polygons[i].isActive=false;
 	};
+	this.colorSelector.value = _poly.fillColor;
+	this.transparencySelector.value = _poly.transparency;
 	_poly.isActive = true;
 }
 
@@ -162,18 +189,16 @@ Plan.prototype.getActivePoly = function(){
  * @return 
  */
  Plan.prototype.fillPolygon = function(_color){
- 	this.context.fillStyle = this.polygonFillColor;
-
- 	var colorObj = hexToRgb(plan.polygonHexColor);
- 	var colorString = 'rgba('+colorObj.r+','+colorObj.g+','+colorObj.b+',1)';
-
- 	this.context.strokeStyle=colorString;
-
- 	
-
  	for (var j = this.polygons.length - 1; j >= 0; j--) {
 
  		var polygon = this.polygons[j];
+
+ 		var colorObj = hexToRgb(polygon.fillColor);
+ 		var colorString = 'rgba('+colorObj.r+','+colorObj.g+','+colorObj.b+',1)';
+ 		var fillColorString = 'rgba('+colorObj.r+','+colorObj.g+','+colorObj.b+','+polygon.transparency+')';
+ 		this.context.strokeStyle=colorString;
+ 		this.context.fillStyle = fillColorString;
+
  		this.context.beginPath();
 
  		for(var i = 0;i<polygon.points.length;i++){
@@ -401,11 +426,13 @@ Plan.prototype.getActivePoly = function(){
  	}
 
  	var polygon = this.getActivePoly();
-
- 	for(var i = 0;i<polygon.points.length;i++){
-		var point = polygon.points[i];
-		point.draw();
-	}
+ 	if(polygon){
+ 		for(var i = 0;i<polygon.points.length;i++){
+			var point = polygon.points[i];
+			point.draw();
+		}
+ 	}
+ 	
  }
 
 /**
@@ -564,6 +591,9 @@ Plan.prototype.getActivePoly = function(){
 
  	this.points = Array();
  	this.isActive = true;
+ 	this.fillColor = "#888888";
+ 	this.strokeColor = "#666666";
+ 	this.transparency = "0.5";
 
 
  	return this;
