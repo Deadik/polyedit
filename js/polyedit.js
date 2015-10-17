@@ -85,6 +85,7 @@
 		//Проверяем, попадает ли угол полигона под клик
 		if(plan.checkClick(event.offsetX,event.offsetY)){
 			plan.checkClick(event.offsetX,event.offsetY).click();
+			_plan.update();
 		}else{
 			if(_plan.hoverLine.start&&_plan.hoverLine.end){
 				plan.drowPoint(event.offsetX,event.offsetY,_plan.hoverIndex);
@@ -399,15 +400,12 @@ Plan.prototype.getActivePoly = function(){
  		this.context.stroke();
  	}
 
- 	for (var j = this.polygons.length - 1; j >= 0; j--) {
+ 	var polygon = this.getActivePoly();
 
- 		var polygon = this.polygons[j];
-
- 		for(var i = 0;i<polygon.points.length;i++){
- 			var point = polygon.points[i];
- 			point.draw();
- 		}
- 	}
+ 	for(var i = 0;i<polygon.points.length;i++){
+		var point = polygon.points[i];
+		point.draw();
+	}
  }
 
 /**
