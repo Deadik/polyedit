@@ -130,6 +130,11 @@
 
 Plan.prototype.polygons = Array();
 
+/**
+ * Получить нужный полигон по его _id
+ * @param  int _id Уникальный идентификатор полигона
+ * @return Polygon|false     искомый полигон или false в случе если не найден
+ */
 Plan.prototype.getById = function(_id){
 	for (var i = this.polygons.length - 1; i >= 0; i--) {
 		if(this.polygons[i]._id==_id)
@@ -143,6 +148,10 @@ Plan.prototype.removePoint = function(_index){
 	this.update();
 }
 
+/**
+ * Делает указанный полигон активным (реадктируемым)
+ * @param Polygon _poly объект который необходимо сделать активным полигоном
+ */
 Plan.prototype.setActive = function(_poly){
 	for (var i = this.polygons.length - 1; i >= 0; i--) {
 		this.polygons[i].isActive=false;
@@ -152,11 +161,16 @@ Plan.prototype.setActive = function(_poly){
 	_poly.isActive = true;
 }
 
+/**
+ * Получить активный полигон
+ * @return Polygon|false активный полигон либо false
+ */
 Plan.prototype.getActivePoly = function(){
 	for (var i = this.polygons.length - 1; i >= 0; i--) {
 		if(this.polygons[i].isActive)
 			return this.polygons[i];
 	};
+	return false;
 }
 
 /**
