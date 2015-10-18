@@ -2,21 +2,55 @@
 <html>
 <head>
 	<title>Polyedit</title>
+	<!-- Latest compiled and minified CSS -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+	<!-- Optional theme -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css">
+	<!-- Latest compiled and minified JavaScript -->
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
 	<script type="text/javascript" src="./js/polyedit.js"></script>
 	<script type="text/javascript" src="./js/script.js"></script>
 </head>
 <body>
-	<!-- <img id="plan_edit_src" src="./images/image.png"/> -->
-	<div id="editor_toolbar">
-		<select id="polygons">
-		</select>
-		<input type="text" id="polyColor"></div>
-		<input type="text" id="polyTransparency"></div>
-		<button id="addPoly">Новый полигон</button>
-		<button id="toJSON">export to json</button>
-		<button id="fromJSON">import to json</button>
+	<div class="row">
+		<canvas id="editor_canvas" data-src="./images/image.png"></canvas>
 	</div>
-	<canvas id="editor_canvas" data-src="./images/image.png"></canvas>
+	<div class="row">
+		<div id="editor_toolbar" >
+			<div class="form-group">
+				<div class="col-sm-4">
+					<div class="col-sm-8">
+					<div class="col-sm-4">
+						<label >Полигон</label>
+						</div>
+						<div class="col-sm-8">
+						<select id="polygons" class="form-control">
+						</select>
+						</div>
+					</div>
+					<button id="polyUp" type="button" class="btn btn-default col-sm-2" aria-label="Up">
+						<span class="glyphicon glyphicon glyphicon-arrow-up" aria-hidden="true"></span>
+					</button>
+					<button id="polyDown" type="button" class="btn btn-default col-sm-2" aria-label="down">
+						<span class="glyphicon glyphicon glyphicon-arrow-down" aria-hidden="true"></span>
+					</button>
+				</div>
+				<div class="col-sm-4 form-inline">
+					<label>Цвет заливки</label>
+					<input type="text" id="polyColor" class="form-control"></div>
+				</div>
+				<div class="col-sm-4 form-inline">
+					<label>Прозрачность</label>
+					<input type="text" id="polyTransparency" class="form-control"></div>
+				</div>
+			</div>
+			<div class="form-group">
+				<button id="addPoly" class="btn">Новый полигон</button>
+				<button id="toJSON" class="btn">export to json</button>
+				<button id="fromJSON" class="btn">import from json</button>
+			</div>
+		</div>
+	</div>
 	
 </body>
 </html> 

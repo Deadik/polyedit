@@ -22,9 +22,61 @@
 	};
 	this.hoverIndex = false;
 
-	var addPolyButton = document.getElementById('addPoly');
+	this.addPolyButton = document.getElementById('addPoly');
 	this.polySelector = document.getElementById('polygons');
+	this.polyUp = document.getElementById('polyUp');
+	this.polyDown = document.getElementById('polyDown');
 	var _plan = this;
+
+
+	this.polyUp.addEventListener("click",function(){
+		var currentPoly = _plan.getActivePoly();
+		for (var i = _plan.polySelector.options.length - 1; i >= 0; i--) {
+			if((_plan.polySelector.options[i].value==currentPoly._id)&&(i>0)){
+				var cOption = _plan.polySelector.options[i];
+				var pOption = _plan.polySelector.options[i-1];
+				_plan.polySelector.insertBefore(cOption,pOption);
+				
+				break;
+			}
+		};
+
+		for (var i = _plan.polygons.length - 1; i >= 0; i--) {
+			if((_plan.polygons[i]._id==currentPoly._id)&&(i>0)){
+				var cOption = _plan.polygons[i];
+				var pOption = _plan.polygons[i-1];
+				_plan.polygons[i]=pOption;
+				_plan.polygons[i-1]=cOption;
+				break;
+			}
+		};
+
+		_plan.update();  
+	});
+
+	this.polyDown.addEventListener("click",function(){
+		var currentPoly = _plan.getActivePoly();
+		for (var i = _plan.polySelector.options.length - 1; i >= 0; i--) {
+			if((_plan.polySelector.options[i].value==currentPoly._id)&&(i<_plan.polySelector.options.length)){
+				var cOption = _plan.polySelector.options[i];
+				var nOption = _plan.polySelector.options[i+1];
+				_plan.polySelector.insertBefore(nOption,cOption);
+				
+				break;
+			}
+		};
+
+		for (var i = _plan.polygons.length - 1; i >= 0; i--) {
+			if((_plan.polygons[i]._id==currentPoly._id)&&(i<_plan.polySelector.options.length)){
+				var cOption = _plan.polygons[i];
+				var pOption = _plan.polygons[i+1];
+				_plan.polygons[i]=pOption;
+				_plan.polygons[i+1]=cOption;
+				break;
+			}
+		};
+		_plan.update();
+	});
 
 	this.colorSelector = document.getElementById('polyColor');
 	this.colorSelector.addEventListener('change',function(){
@@ -58,7 +110,7 @@
 		}
 	});
 
-	addPolyButton.addEventListener("click",function(e){
+	this.addPolyButton.addEventListener("click",function(e){
 		e.preventDefault();
 
 		var newPoly = new Polygon(_plan.context);
@@ -66,8 +118,8 @@
 		option.value = newPoly._id;
 		var text = document.createTextNode(newPoly._name);
 		option.appendChild(text);
-		polySelector.appendChild(option);
-		polySelector.value=option.value;
+		_plan.polySelector.appendChild(option);
+		_plan.polySelector.value=option.value;
 		_plan.polygons.push(newPoly);
 		_plan.setActive(newPoly);
 	});
