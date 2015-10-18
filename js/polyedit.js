@@ -23,7 +23,7 @@
 	this.hoverIndex = false;
 
 	var addPolyButton = document.getElementById('addPoly');
-	var polySelector = document.getElementById('polygons');
+	this.polySelector = document.getElementById('polygons');
 	var _plan = this;
 
 	this.colorSelector = document.getElementById('polyColor');
@@ -51,7 +51,7 @@
 		_plan.update();
 	});
 
-	polySelector.addEventListener("change",function(e){
+	this.polySelector.addEventListener("change",function(e){
 		var poly = _plan.getById(this.value);
 		if(poly){
 			_plan.setActive(poly);
@@ -61,7 +61,7 @@
 	addPolyButton.addEventListener("click",function(e){
 		e.preventDefault();
 
-		var newPoly = new Polygon();
+		var newPoly = new Polygon(_plan.context);
 		var option = document.createElement("OPTION");
 		option.value = newPoly._id;
 		var text = document.createTextNode(newPoly._name);
@@ -187,8 +187,10 @@ Plan.prototype.getActivePoly = function(){
  	var poly = this.getActivePoly();
 
  	var _point = new Point(this.context,_X,_Y);
+ 	_point.setActive(!_point.isActive);
+ 	console.log(poly);
  	if(_index){
- 		this.points.splice(_index,0,_point);
+ 		poly.points.splice(_index,0,_point);
  	}else{
  		poly.points.push(_point);
  	}
@@ -487,6 +489,42 @@ Plan.prototype.getActivePoly = function(){
  	return this.polygonHexColor;
  }
 
+/**
+ * Метод генерирует json строку пригодную для сохранения
+ * @return {[type]} [description]
+ */
+ Plan.prototype.toJSON = function(){
+ 	var res = Array();
+ 	for (var i = this.polygons.length - 1; i >= 0; i--) {
+ 		res.push(this.polygons[i])
+ 	};
+ 	var jsonString = JSON.stringify(res);
+ 	return jsonString;
+ }
+
+ Plan.prototype.loadFromJSON = function(_js){
+ 	var obj = JSON.parse(_js);
+
+ 	for (var i = obj.length - 1; i >= 0; i--) {
+
+ 		//console.log(obj[i]);
+
+ 		var newPoly = new Polygon(this.context,obj[i]);
+		var option = document.createElement("OPTION");
+		option.value = newPoly._id;
+		var text = document.createTextNode(newPoly._name);
+		option.appendChild(text);
+		this.polySelector.appendChild(option);
+		this.polySelector.value=option.value;
+		this.polygons.push(newPoly);
+		this.setActive(newPoly);
+
+
+ 	};
+ 	this.update();
+ 	
+ }
+
 //Точка на плане
 /**
  * Description
@@ -496,13 +534,14 @@ Plan.prototype.getActivePoly = function(){
  * @param {} _Y
  * @return 
  */
- var Point = function(context,_X,_Y,parent){
+ var Point = function(context,_X,_Y){
+
+	this.x = _X;
+	this.y = _Y;
 
  	this.radius = 3;
- 	this.x = _X;
- 	this.y = _Y;
+ 	
  	this.context = context;
- 	this.parent = parent;
 
  	this.color = '#00AA00';
  	this.colorNorm = '#00AA00';
@@ -519,8 +558,11 @@ Plan.prototype.getActivePoly = function(){
  	this.context.strokeStyle = '#003300';
  	this.context.stroke();
 
- 	this.setActive(!this.isActive);
+ 	
+ 	return this;
  }
+
+
 
 /**
  * Description
@@ -598,18 +640,31 @@ Plan.prototype.getActivePoly = function(){
  * @method Polygon
  * @return 
  */
- var Polygon = function(){
- 	this._id = new Date().getTime();
- 	this._name = Polygon.prototype.lastNumber;
- 	Polygon.prototype.lastNumber++;
+ var Polygon = function(_context,_data){
 
+ 	this.context = _context;
  	this.points = Array();
+
+ 	if(_data&&_data!=undefined){
+ 		this._id = _data._id;
+ 		this.fillColor = _data.fillColor;
+ 		this.strokeColor = _data.strokeColor;
+ 		this.transparency = _data.transparency;
+ 		this._name = _data._name;
+
+ 		for (var i = _data.points.length - 1; i >= 0; i--) {
+ 			this.points.push(new Point(this.context,_data.points[i].x,_data.points[i].y));
+ 		};
+ 	}else{
+ 		this._id = new Date().getTime();
+	 	this.fillColor = "#888888";
+	 	this.strokeColor = "#666666";
+	 	this.transparency = "0.5";
+	 	this._name = Polygon.prototype.lastNumber;
+ 	}
  	this.isActive = true;
- 	this.fillColor = "#888888";
- 	this.strokeColor = "#666666";
- 	this.transparency = "0.5";
-
-
+ 	
+ 	Polygon.prototype.lastNumber++;
  	return this;
  }
 
