@@ -16,10 +16,11 @@
  	this.toolbar = document.createElement("DIV");
  	addClass(this.toolbar,'pe_toolbar');
  	this.wrapper.appendChild(this.toolbar);
- 	//Создаём выпадающий список полигонов
- 	this.selector = document.createElement("DIV");
- 	addClass(this.selector,'pe_toolbar_select');
- 	this.toolbar.appendChild(this.selector);
+ 	//Создаём выезжающую часть тулбара
+ 	this.toolbar_container = document.createElement("DIV");
+ 	addClass(this.toolbar_container,'pe_toolbar_container');
+ 	this.toolbar.appendChild(this.toolbar_container);
+
  	//Создаём канвас
  	this.canvas = document.createElement("CANVAS");
  	this.wrapper.appendChild(this.canvas);
