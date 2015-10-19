@@ -17,6 +17,8 @@
 	background: rgba(50,50,50,0.5);
 	position: absolute;
 	height: inherit;
+	-webkit-transition: height 1s; /* Safari */
+    transition: height 1s;
 }
 
 .pe_toolbar:hover .pe_toolbar_container{
