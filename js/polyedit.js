@@ -20,6 +20,32 @@
  	this.toolbar_container = document.createElement("DIV");
  	addClass(this.toolbar_container,'pe_toolbar_container');
  	this.toolbar.appendChild(this.toolbar_container);
+ 	//Добавляем кнопку "Добавить полигон"
+ 	this.addButton = document.createElement("DIV");
+ 	addClass(this.addButton,'pe_toolbar_add');
+ 	addClass(this.addButton,'button');
+ 	this.toolbar_container.appendChild(this.addButton);
+
+ 	//Добавляем список полигонов
+ 	this.listButton = document.createElement("DIV");
+ 	addClass(this.listButton,'pe_toolbar_list');
+ 	addClass(this.listButton,'button');
+ 	this.toolbar_container.appendChild(this.listButton);
+
+ 	this.currentPolygon = document.createElement("DIV");
+ 	this.currentPolygon.innerHTML='Polygon Name';
+ 	addClass(this.currentPolygon,'pe_current_polygon');
+ 	this.listButton.appendChild(this.currentPolygon);
+
+ 	var dropListContainer = document.createElement("DIV");
+ 	addClass(dropListContainer,'pe_drop_list_container');
+ 	this.listButton.appendChild(dropListContainer);
+
+ 	for (var i = 5 - 1; i >= 0; i--) {
+ 		var test = document.createElement("DIV");
+ 		test.innerHTML='poly'+i;
+ 		dropListContainer.appendChild(test);
+ 	}
 
  	//Создаём канвас
  	this.canvas = document.createElement("CANVAS");

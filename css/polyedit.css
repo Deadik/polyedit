@@ -1,11 +1,13 @@
 .pe_container{
 	width: auto;
 	float: left;
+
+	margin: 50px;
 }
 
 .pe_toolbar{
 	min-height: 12px;
-	height: 12px;
+	height: 32px;
 	background: rgba(50,50,255,0.5);
 	width: 100%;
 	position: relative;
@@ -21,8 +23,45 @@
     transition: height 1s;
 }
 
-.pe_toolbar:hover .pe_toolbar_container{
+/*.pe_toolbar:hover .pe_toolbar_container{
 	height: 100px;
-	-webkit-transition: height 1s; /* Safari */
+	-webkit-transition: height 1s;
     transition: height 1s;
+}*/
+
+.button{
+	width: 32px;
+	height: 32px;
+	cursor: pointer;
+	float: left;
+}
+
+.pe_toolbar_add{
+	background: url(../images/plus_alt.png);
+}
+
+.pe_toolbar_list{
+	background: url(../images/list_bullets.png) no-repeat;
+	width: 128px;
+	position: relative;
+}
+
+.pe_current_polygon{
+	margin-left: 32px;
+}
+
+.pe_drop_list_container{
+	position: absolute;
+	max-height: 0px;
+	top:32px;
+	-webkit-transition: max-height 1s; /* Safari */
+    transition: max-height 1s;
+    overflow: hidden;
+}
+
+.pe_toolbar_list:hover .pe_drop_list_container{
+	max-height: 1000px;
+	-webkit-transition: max-height 2s; /* Safari */
+    transition: max-height 2s;
+    overflow: hidden;
 }
