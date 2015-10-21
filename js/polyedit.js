@@ -1,6 +1,7 @@
 //Общий план
 /**
- * Конструктор объекта План
+ * Конструктор объекта План, в качестве параметра принимает элемент,
+ * являющийся контейнером для рабочей области
  * @method Plan
  * @param {} context Контекст в котором будет происходить работа
  * @return 
@@ -221,6 +222,7 @@
 	
 }
 
+//Задаём начальные состояния параметров класса
 Plan.prototype.polygons = Array();
 
 /**
@@ -236,6 +238,10 @@ Plan.prototype.getById = function(_id){
 	return false;
 }
 
+/**
+ * @deprecated Начиная с добавления отдельных полигонов
+ * @param  int _index Индекс точки
+ */
 Plan.prototype.removePoint = function(_index){
 	this.points.splice(_index,1);
 	this.update();
@@ -293,6 +299,7 @@ Plan.prototype.getActivePoly = function(){
 
 /**
  * Заполняет полигон, обозначенный точками
+ * @deprecated После добавления класса полигонов теряет смысл
  * @method fillPolygon
  * @param {} _color
  * @return 
@@ -335,6 +342,14 @@ Plan.prototype.getActivePoly = function(){
  	
  }
 
+/**
+ * Вычисляет расстояние между точкой и линией, необходима для определения события hover для линии и возможности деления линии
+ * @param  {int} _x          Координата точки X
+ * @param  {int} _y          Координата точки Y
+ * @param  {Pos} _line_start Координаты начала линии
+ * @param  {Pos} _line_end   Координаты конца линии
+ * @return {float|false}     Кратчайшее расстояние от точки до линии либо false, если расстояние от точки до одного из концов больше чем длина линии.
+ */
  Plan.prototype.pointToLineDistance = function(_x,_y,_line_start,_line_end){
 
  	var distance = Math.abs(((_line_start.y-_line_end.y)*_x)+((_line_end.x-_line_start.x)*_y)+(_line_start.x*_line_end.y-_line_end.x*_line_start.y))/(Math.sqrt((Math.pow((_line_end.x-_line_start.x),2))+(Math.pow((_line_end.y-_line_start.y),2))));
@@ -348,16 +363,13 @@ Plan.prototype.getActivePoly = function(){
  	}else{
  		return false;
  	}
-
-	//return distance;
-
 }
 
 /**
  * Проверка на попадание в точку
  * @method checkHover
- * @param {} _x
- * @param {} _y
+ * @param {int} _x
+ * @param {int} _y
  * @return CallExpression
  */
  Plan.prototype.checkHover = function(_x,_y){
@@ -404,11 +416,11 @@ Plan.prototype.getActivePoly = function(){
 }
 
 /**
- * Description
+ * Обработка события click по точке
  * @method checkClick
- * @param {} _x
- * @param {} _y
- * @return CallExpression
+ * @param {int} _x
+ * @param {int} _y
+ * @return {Point}
  */
  Plan.prototype.checkClick = function(_x,_y){
 
@@ -422,9 +434,9 @@ Plan.prototype.getActivePoly = function(){
 /**
  * Поиск точек, подходящих под заданные координаты
  * @method checkPoints
- * @param {} _x
- * @param {} _y
- * @return res
+ * @param {int} _x
+ * @param {int} _y
+ * @return {Point} подходящая точка
  */
  Plan.prototype.checkPoints = function(_x,_y){
  	var res = false;
@@ -729,9 +741,11 @@ Plan.prototype.getActivePoly = function(){
  }
 
 /**
- * Description
+ * Класс объекта Полигон, хранит в ебе методы отрисовки полигона и набор точек
  * @method Polygon
- * @return 
+ * @param {Context2d} _context Текущий контекст
+ * @param {Object} [_data] Загружаемые в полигон данные
+ * @return {Polygon} Объект Полигон
  */
  var Polygon = function(_context,_data){
 
