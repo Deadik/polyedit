@@ -275,6 +275,8 @@ Plan.prototype.setActive = function(_poly){
 	this.transparencySelector.value = _poly.transparency;
 	_poly.isActive = true;
 	addClass(_poly.selector,'active');
+
+	this.currentPolygon.innerHTML = _poly._name;
 }
 
 /**
