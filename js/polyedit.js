@@ -12,6 +12,7 @@
 
  	//Создаём набор свойств
  	this.polygons = Array();
+ 	var _plan = this;
 
  	//Создаём тулбар
  	this.toolbar = document.createElement("DIV");
@@ -27,6 +28,10 @@
  	addClass(this.addButton,'button');
  	this.toolbar_container.appendChild(this.addButton);
 
+ 	this.addButton.addEventListener('click',function(){
+ 		_plan.addPolygon();
+ 	});
+
  	//Добавляем список полигонов
  	this.listButton = document.createElement("DIV");
  	addClass(this.listButton,'pe_toolbar_list');
@@ -38,15 +43,9 @@
  	addClass(this.currentPolygon,'pe_current_polygon');
  	this.listButton.appendChild(this.currentPolygon);
 
- 	var dropListContainer = document.createElement("DIV");
- 	addClass(dropListContainer,'pe_drop_list_container');
- 	this.listButton.appendChild(dropListContainer);
-
- 	for (var i = 5 - 1; i >= 0; i--) {
- 		var test = document.createElement("DIV");
- 		test.innerHTML='poly'+i;
- 		dropListContainer.appendChild(test);
- 	}
+ 	this.dropListContainer = document.createElement("DIV");
+ 	addClass(this.dropListContainer,'pe_drop_list_container');
+ 	this.listButton.appendChild(this.dropListContainer);
 
  	//Создаём канвас
  	this.canvas = document.createElement("CANVAS");
@@ -119,7 +118,7 @@
 	this.polySelector = document.getElementById('polygons');
 	this.polyUp = document.getElementById('polyUp');
 	this.polyDown = document.getElementById('polyDown');
-	var _plan = this;
+	
 
 
 	this.polyUp.addEventListener("click",function(){
@@ -253,11 +252,13 @@ Plan.prototype.removePoint = function(_index){
  */
 Plan.prototype.setActive = function(_poly){
 	for (var i = this.polygons.length - 1; i >= 0; i--) {
+		removeClass(this.polygons[i].selector,'active');
 		this.polygons[i].isActive=false;
 	};
 	this.colorSelector.value = _poly.fillColor;
 	this.transparencySelector.value = _poly.transparency;
 	_poly.isActive = true;
+	addClass(_poly.selector,'active');
 }
 
 /**
@@ -630,9 +631,31 @@ Plan.prototype.getActivePoly = function(){
  	
  }
 
-//Точка на плане
 /**
- * Description
+ * Метод создаёт новый полигон и добавляет его в список
+ * @return {Polygon} Добавленный полигон
+ */
+Plan.prototype.addPolygon = function(){
+	var newPoly = new Polygon(this.context);
+	newPoly.selector = document.createElement("DIV");
+	var text = document.createTextNode(newPoly._name);
+	newPoly.selector.appendChild(text);
+
+	var _plan = this;
+
+	newPoly.selector.addEventListener('click',function(){
+		_plan.setActive(newPoly);
+	});
+
+	this.dropListContainer.appendChild(newPoly.selector);
+	this.polygons.push(newPoly);
+	this.setActive(newPoly);
+
+	return newPoly;
+}
+
+/**
+ * Точка на плане
  * @method Point
  * @param {} context
  * @param {} _X
@@ -767,7 +790,7 @@ Plan.prototype.getActivePoly = function(){
 	 	this.fillColor = "#888888";
 	 	this.strokeColor = "#666666";
 	 	this.transparency = "0.5";
-	 	this._name = Polygon.prototype.lastNumber;
+	 	this._name = Polygon.prototype.defaultName+Polygon.prototype.lastNumber;
  	}
  	this.isActive = true;
  	
@@ -776,6 +799,8 @@ Plan.prototype.getActivePoly = function(){
  }
 
  Polygon.prototype.lastNumber = 1;
+ Polygon.prototype.selector = {};
+ Polygon.prototype.defaultName = 'Polygon';
 
  Polygon.prototype.removePoint = function(_index){
 	this.points.splice(_index,1);
