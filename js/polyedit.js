@@ -47,6 +47,22 @@
  	addClass(this.dropListContainer,'pe_drop_list_container');
  	this.listButton.appendChild(this.dropListContainer);
 
+ 	//Добавляем color picker
+ 	var jsColorSrc = document.createElement('SCRIPT');
+ 	document.getElementsByTagName('head')[0].appendChild(jsColorSrc);
+ 	jsColorSrc.src='./js/jscolor.js';
+
+ 	jsColorSrc.onload = function(){
+ 		var colorPicker = document.createElement('INPUT');
+ 		addClass(colorPicker,'color');
+ 		_plan.toolbar_container.appendChild(colorPicker);
+ 		colorPicker.onchange = function(){
+ 			var color = '#'+this.value;
+ 			var _poly = _plan.getActivePoly();
+ 			_poly.fillColor = color;
+ 			_plan.update();
+ 		}
+ 	}
  	//Создаём канвас
  	this.canvas = document.createElement("CANVAS");
  	this.wrapper.appendChild(this.canvas);
