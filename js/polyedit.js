@@ -63,6 +63,62 @@
  			_plan.update();
  		}
  	}
+ 	//Добавляем ползунок прозрачности
+ 	this.transparencyButton = document.createElement("DIV");
+ 	addClass(this.transparencyButton,'pe_toolbar_transparency');
+ 	addClass(this.transparencyButton,'button');
+ 	this.toolbar_container.appendChild(this.transparencyButton);
+
+ 	this.transparencySlider = document.createElement("DIV");
+ 	addClass(this.transparencySlider,'pe_toolbar_transparency_slider');
+ 	this.transparencyButton.appendChild(this.transparencySlider);
+
+ 	this.transparencyWay = document.createElement("DIV");
+ 	addClass(this.transparencyWay,'pe_way');
+ 	this.transparencySlider.appendChild(this.transparencyWay);
+
+ 	this.transparencySliderPick = document.createElement("DIV");
+ 	addClass(this.transparencySliderPick,'pe_pick');
+ 	this.transparencySlider.appendChild(this.transparencySliderPick);
+
+ 	var _pick = this.transparencySliderPick;
+ 	this.transparencySliderPick.addEventListener('mousedown',function(_e){
+ 		_pick.holdLMB = true;
+ 	});
+
+ 	var _slider = this.transparencySlider;
+
+ 	this.transparencySlider.addEventListener('mousemove',function(e){
+ 		if(_plan.transparencySliderPick.holdLMB){
+ 			var y;
+
+ 			if (e.pageY) { 
+ 				y = e.pageY;
+ 			}else { 
+ 				y = e.clientY + document.body.scrollTop + document.documentElement.scrollTop; 
+ 			} 
+
+ 			var top = y - _slider.getBoundingClientRect().top;
+ 			var height = _slider.getBoundingClientRect().height;
+
+ 			if(top<0)
+ 				top = 0;
+
+ 			if(top>height)
+ 				top=height;
+
+ 			var polygon = _plan.getActivePoly();
+ 			polygon.transparency = top/height;
+ 			console.log(polygon.transparency);
+ 			_plan.update();
+ 			_plan.transparencySliderPick.style.top = top+"px";
+ 		}
+ 	});
+
+ 	document.addEventListener('mouseup',function(_e){
+ 		_pick.holdLMB = false;
+ 	});
+ 	
  	//Создаём канвас
  	this.canvas = document.createElement("CANVAS");
  	this.wrapper.appendChild(this.canvas);

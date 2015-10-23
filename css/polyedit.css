@@ -80,3 +80,45 @@
 	background: #000;
 	color:#FFF;
 }
+
+.pe_toolbar_transparency{
+	background: url(../images/miscellaneous.png) no-repeat;
+}
+
+.pe_toolbar_transparency_slider{
+	position: absolute;
+	max-height: 0px;
+	top:32px;
+	-webkit-transition: max-height 1s; /* Safari */
+    transition: max-height 1s;
+    overflow: hidden;
+    background: #AAA;
+    width: 32px;
+    cursor: default;
+}
+
+.pe_toolbar_transparency:hover .pe_toolbar_transparency_slider{
+	height: 128px;
+	max-height: 1000px;
+	-webkit-transition: max-height 2s; /* Safari */
+    transition: max-height 2s;
+    overflow: hidden;
+}
+
+.pe_way{
+	width: 6px;
+	margin: 0 auto;
+	background: #000;
+	height: 100%;
+	cursor: pointer;
+}
+
+.pe_pick{
+	width: 100%;
+	height: 6px;
+	background: #000;
+	border: 1px solid #555;
+	position: absolute;
+    top: 0;
+    cursor: pointer;
+}
