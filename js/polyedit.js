@@ -89,6 +89,17 @@
  	var _slider = this.transparencySlider;
 
  	this.transparencySlider.addEventListener('mousemove',function(e){
+
+ 		var height = 0;
+ 		if(this.transparencySliderHeight){
+			height = this.transparencySliderHeight;
+		}else{
+			height = _slider.getBoundingClientRect().height;
+		}
+
+		var _poly = _plan.getActivePoly();
+		_plan.transparencySliderPick.style.top=_poly.transparency*height+"px";
+
  		if(_plan.transparencySliderPick.holdLMB){
  			var y;
 
@@ -99,7 +110,6 @@
  			} 
 
  			var top = y - _slider.getBoundingClientRect().top;
- 			var height = _slider.getBoundingClientRect().height;
 
  			if(top<0)
  				top = 0;
@@ -109,7 +119,6 @@
 
  			var polygon = _plan.getActivePoly();
  			polygon.transparency = top/height;
- 			console.log(polygon.transparency);
  			_plan.update();
  			_plan.transparencySliderPick.style.top = top+"px";
  		}
@@ -323,16 +332,24 @@ Plan.prototype.removePoint = function(_index){
  * @param Polygon _poly объект который необходимо сделать активным полигоном
  */
 Plan.prototype.setActive = function(_poly){
+	//Снимаем флаг активности со всех полигонов
 	for (var i = this.polygons.length - 1; i >= 0; i--) {
 		removeClass(this.polygons[i].selector,'active');
 		this.polygons[i].isActive=false;
 	};
+	//Задаём инструментам тулбара значения активного полигона
 	this.colorSelector.value = _poly.fillColor;
 	this.transparencySelector.value = _poly.transparency;
 	_poly.isActive = true;
 	addClass(_poly.selector,'active');
-
 	this.currentPolygon.innerHTML = _poly._name;
+
+	//Смещаем ползунок прозрачности
+ 	var height = this.transparencySliderHeight;
+ 	if(height){
+ 		this.transparencySliderPick.style.top=_poly.transparency*height;
+ 	}
+	
 }
 
 /**
@@ -362,7 +379,6 @@ Plan.prototype.getActivePoly = function(){
 
  	var _point = new Point(this.context,_X,_Y);
  	_point.setActive(!_point.isActive);
- 	console.log(poly);
  	if(_index){
  		poly.points.splice(_index,0,_point);
  	}else{
@@ -572,7 +588,6 @@ Plan.prototype.getActivePoly = function(){
 		 * @return 
 		 */
 		 imageObj.onload = function() {
-		 	console.log(imageObj);
 		 	t.context.canvas.width  = imageObj.width;
 		 	t.context.canvas.height = imageObj.height;
 		 	t.imageObj = imageObj;
@@ -686,8 +701,6 @@ Plan.prototype.getActivePoly = function(){
  	var obj = JSON.parse(_js);
 
  	for (var i = obj.length - 1; i >= 0; i--) {
-
- 		//console.log(obj[i]);
 
  		var newPoly = new Polygon(this.context,obj[i]);
 		var option = document.createElement("OPTION");
