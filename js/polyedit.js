@@ -77,6 +77,8 @@
  	addClass(this.transparencyWay,'pe_way');
  	this.transparencySlider.appendChild(this.transparencyWay);
 
+ 	
+
  	this.transparencySliderPick = document.createElement("DIV");
  	addClass(this.transparencySliderPick,'pe_pick');
  	this.transparencySlider.appendChild(this.transparencySliderPick);
@@ -91,8 +93,8 @@
  	this.transparencySlider.addEventListener('mousemove',function(e){
 
  		var height = 0;
- 		if(this.transparencySliderHeight){
-			height = this.transparencySliderHeight;
+ 		if(_plan.transparencySliderHeight){
+			height = _plan.transparencySliderHeight;
 		}else{
 			height = _slider.getBoundingClientRect().height;
 		}
@@ -122,6 +124,40 @@
  			_plan.update();
  			_plan.transparencySliderPick.style.top = top+"px";
  		}
+ 	});
+
+ 	this.transparencyWay.addEventListener('click',function(e){
+ 		console.log('way_click');
+ 		var height = 0;
+ 		if(_plan.transparencySliderHeight){
+			height = _plan.transparencySliderHeight;
+		}else{
+			height = _slider.getBoundingClientRect().height;
+		}
+
+		var _poly = _plan.getActivePoly();
+		_plan.transparencySliderPick.style.top=_poly.transparency*height+"px";
+
+		var y;
+
+		if (e.pageY) { 
+			y = e.pageY;
+		}else { 
+			y = e.clientY + document.body.scrollTop + document.documentElement.scrollTop; 
+		} 
+
+		var top = y - _slider.getBoundingClientRect().top;
+
+		if(top<0)
+			top = 0;
+
+		if(top>height)
+			top=height;
+
+		var polygon = _plan.getActivePoly();
+		polygon.transparency = top/height;
+		_plan.update();
+		_plan.transparencySliderPick.style.top = top+"px";
  	});
 
  	document.addEventListener('mouseup',function(_e){
