@@ -13,6 +13,11 @@
  	//Создаём набор свойств
  	this.polygons = Array();
  	var _plan = this;
+ 	this.hoverLine = {
+		start:false,
+		end:false
+	};
+	this.hoverIndex = false;
 
  	//Создаём тулбар
  	this.toolbar = document.createElement("DIV");
@@ -50,7 +55,7 @@
  	//Добавляем color picker
  	var jsColorSrc = document.createElement('SCRIPT');
  	document.getElementsByTagName('head')[0].appendChild(jsColorSrc);
- 	jsColorSrc.src='./js/jscolor.js';
+ 	jsColorSrc.src='./js/jscolor.js';//TODO: Добавить нормальную загрузку
 
  	jsColorSrc.onload = function(){
  		var colorPicker = document.createElement('INPUT');
@@ -77,12 +82,11 @@
  	addClass(this.transparencyWay,'pe_way');
  	this.transparencySlider.appendChild(this.transparencyWay);
 
- 	
-
  	this.transparencySliderPick = document.createElement("DIV");
  	addClass(this.transparencySliderPick,'pe_pick');
  	this.transparencySlider.appendChild(this.transparencySliderPick);
 
+ 	//Обрабатываем клик по ползунку слайдера
  	var _pick = this.transparencySliderPick;
  	this.transparencySliderPick.addEventListener('mousedown',function(_e){
  		_pick.holdLMB = true;
@@ -90,6 +94,7 @@
 
  	var _slider = this.transparencySlider;
 
+ 	//Обработчик перемещения мыши по слайдеру
  	this.transparencySlider.addEventListener('mousemove',function(e){
 
  		var height = 0;
@@ -102,6 +107,7 @@
 		var _poly = _plan.getActivePoly();
 		_plan.transparencySliderPick.style.top=_poly.transparency*height+"px";
 
+		//Изменяем занчение прозрачности только если нажата клавиша мыши
  		if(_plan.transparencySliderPick.holdLMB){
  			var y;
 
@@ -126,8 +132,8 @@
  		}
  	});
 
+ 	//Обрабатываем клик по слайдеру в произвольной точке
  	this.transparencyWay.addEventListener('click',function(e){
- 		console.log('way_click');
  		var height = 0;
  		if(_plan.transparencySliderHeight){
 			height = _plan.transparencySliderHeight;
@@ -160,6 +166,7 @@
 		_plan.transparencySliderPick.style.top = top+"px";
  	});
 
+ 	//Глобавльный обработчик для события отпускания мыши
  	document.addEventListener('mouseup',function(_e){
  		_pick.holdLMB = false;
  	});
@@ -183,6 +190,7 @@
 			plan.checkClick(event.offsetX,event.offsetY).click();
 			_plan.update();
 		}else{
+			//Если нет, то проверяем, не попадает ли в зону действия курсора грань полигона
 			if(_plan.hoverLine.start&&_plan.hoverLine.end){
 				plan.drowPoint(event.offsetX,event.offsetY,_plan.hoverIndex);
 			}else{
@@ -190,46 +198,35 @@
 			}
 			
 		}
-		
-
-		//Проверяем, попадает ли фигура под клик (подумать)
-
-		//Рисуем точку
-		
 	});
 
+ 	//Обрабатываем нажатие на клавиши клавиатуры при активном канвасе
 	this.canvas.addEventListener( "keypress", function(e){
 		
 		switch(e.keyCode){
-			case 127:
+			case 127: 		//Обрабатываем нажатие на клавишу Delete
 
-			for (var j = _plan.polygons.length - 1; j >= 0; j--) {
+				for (var j = _plan.polygons.length - 1; j >= 0; j--) {
+	 				var polygon = _plan.polygons[j];
+					for(var i=0;i<polygon.points.length;i++){
+						var point = polygon.points[i];
 
- 				var polygon = _plan.polygons[j];
-			for(var i=0;i<polygon.points.length;i++){
-				var point = polygon.points[i];
+						if(point.isActive)
+							polygon.removePoint(i);
 
-				if(point.isActive)
-					polygon.removePoint(i);
-
-				_plan.update();
-			}
-		}
-			break;
+						_plan.update();
+					}
+				}
+				break;
 		}
 		
 	}, true);
 
+	//Обрабатываем перемещение по канвасу курсора мыши
 	this.canvas.addEventListener('mousemove', function(event){
 			//Проверяем на какой точке находимся
 			plan.checkHover(event.offsetX,event.offsetY);
 	});
-	
-	this.hoverLine = {
-		start:false,
-		end:false
-	};
-	this.hoverIndex = false;
 
 	this.addPolyButton = document.getElementById('addPoly');
 	this.polySelector = document.getElementById('polygons');
@@ -781,43 +778,43 @@ Plan.prototype.addPolygon = function(){
 /**
  * Точка на плане
  * @method Point
- * @param {} context
- * @param {} _X
- * @param {} _Y
- * @return 
+ * @param {Context2d} текущий context
+ * @param {int} _X координата по горизонтали
+ * @param {int} _Y координата по вертикали
+ * @return {Point} созданная точка
  */
  var Point = function(context,_X,_Y){
 
 	this.x = _X;
 	this.y = _Y;
 
- 	this.radius = 3;
+ 	this.radius = 3;	//Радиус вершины в режиме редиктирования
  	
  	this.context = context;
 
  	this.color = '#00AA00';
- 	this.colorNorm = '#00AA00';
- 	this.colorHover = '#88FF88';
- 	this.colorActive = '#FFFFFF';
+ 	this.colorNorm = '#00AA00';//Цвет в обычном состоянии
+ 	this.colorHover = '#88FF88';//Цвет при наведении
+ 	this.colorActive = '#FFFFFF';//Цвет в активном состоянии
+ 	//Флаги состояния
  	this.isActive = false;
  	this.isHover = false;
-
+ 	//Отрисовка
  	this.context.beginPath();
  	this.context.arc(_X, _Y, this.radius, 0, 2 * Math.PI, false);
  	this.context.fillStyle = this.color;
  	this.context.fill();
  	this.context.lineWidth = 1;
- 	this.context.strokeStyle = '#003300';
+ 	this.context.strokeStyle = '#003300';//цвет обводки
  	this.context.stroke();
 
- 	
  	return this;
  }
 
 
 
 /**
- * Description
+ * Метод отрисовывает точку - вершину многоугольника полигона 
  * @method draw
  * @return 
  */
@@ -899,6 +896,9 @@ Plan.prototype.addPolygon = function(){
  	this.context = _context;
  	this.points = Array();
 
+ 	//Если переданы данные полигона,
+ 	//то создаём полигон и заполняем его данными,
+ 	//в противном случае просто создаём полигон
  	if(_data&&_data!=undefined){
  		this._id = _data._id;
  		this.fillColor = _data.fillColor;
