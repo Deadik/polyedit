@@ -716,10 +716,6 @@ Plan.prototype.getActivePoly = function(){
  	return coords;
  }
 
- Plan.prototype.getHexColor = function(){
- 	return this.polygonHexColor;
- }
-
 /**
  * Метод генерирует json строку пригодную для сохранения
  * @return {[type]} [description]
@@ -733,6 +729,11 @@ Plan.prototype.getActivePoly = function(){
  	return jsonString;
  }
 
+/**
+ * Метод загружает данные полигонов из JSON строки
+ * @param  {string} _js JSON строка с данными о полигонах
+ * @return {bool}     на данный момент функция всегда возвращает true
+ */
  Plan.prototype.loadFromJSON = function(_js){
  	var obj = JSON.parse(_js);
 
@@ -751,7 +752,7 @@ Plan.prototype.getActivePoly = function(){
 
  	};
  	this.update();
- 	
+ 	return true;
  }
 
 /**
