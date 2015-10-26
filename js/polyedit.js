@@ -37,6 +37,17 @@
  		_plan.addPolygon();
  	});
 
+ 	//Добавляем кнопку "Удалить полигон"
+ 	this.removeButton = document.createElement("DIV");
+ 	addClass(this.removeButton,'pe_toolbar_remove');
+ 	addClass(this.removeButton,'pe_button');
+ 	this.toolbar_container.appendChild(this.removeButton);
+
+ 	this.removeButton.addEventListener('click',function(){
+ 		var cPoly = _plan.getActivePoly();
+ 		_plan.removePolygon(cPoly);
+ 	});
+
  	//Добавляем список полигонов
  	this.listButton = document.createElement("DIV");
  	addClass(this.listButton,'pe_toolbar_list');
@@ -773,6 +784,29 @@ Plan.prototype.addPolygon = function(){
 	this.setActive(newPoly);
 
 	return newPoly;
+}
+
+/**
+ * Метод для удаления полигона
+ * @param  {Polygon} _poly Удаляемый полигон
+ * @return {bool}       true если полигон удалён, false в случае если полигон не найден
+ */
+Plan.prototype.removePolygon=function(_poly){
+	for (var i = this.polygons.length - 1; i >= 0; i--) {
+		if(this.polygons[i]._id==_poly._id){
+			this.dropListContainer.removeChild(this.polygons[i].selector);
+			this.polygons.splice(i,1);
+			if(this.polygons[i-1]){
+				this.setActive(this.polygons[i-1]);
+			}else{
+				this.setActive(this.polygons[i]);
+			}
+			
+			this.update();
+			return true;
+		}
+	};
+	return false;
 }
 
 /**

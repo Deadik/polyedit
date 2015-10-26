@@ -23,13 +23,7 @@
     transition: height 1s;
 }
 
-/*.pe_toolbar:hover .pe_toolbar_container{
-	height: 100px;
-	-webkit-transition: height 1s;
-    transition: height 1s;
-}*/
-
-.button{
+.button,.pe_button{
 	width: 32px;
 	height: 32px;
 	cursor: pointer;
@@ -121,4 +115,8 @@
 	position: absolute;
     top: 0;
     cursor: pointer;
+}
+
+.pe_toolbar_remove{
+	background: url(../images/minus_alt.png);
 }
